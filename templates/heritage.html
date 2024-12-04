@@ -1,0 +1,288 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="mb-4">Heritage Preservation</h1>
+    
+    <!-- Heritage Overview -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Heritage Crop Map</h5>
+                    <div id="heritageMap" style="height: 400px;"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Preservation Status</h5>
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            Active Preservation Projects
+                            <span class="badge bg-success rounded-pill">12</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            Endangered Varieties
+                            <span class="badge bg-danger rounded-pill">5</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            Community Contributors
+                            <span class="badge bg-primary rounded-pill">128</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Heritage Crop Catalog -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="card-title">Heritage Crop Catalog</h5>
+                <div>
+                    <input type="text" class="form-control d-inline-block w-auto" placeholder="Search crops...">
+                    <button class="btn btn-success ms-2" data-bs-toggle="modal" data-bs-target="#addCropModal">
+                        <i class="fas fa-plus"></i> Add Crop
+                    </button>
+                </div>
+            </div>
+            <div class="row" id="heritageCropGrid">
+                <!-- Heritage crops will be dynamically added here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Cultural Practices -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Traditional Farming Practices</h5>
+                    <div class="list-group" id="practicesList">
+                        <!-- Traditional practices will be dynamically added here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Community Contributions</h5>
+                    <div class="timeline" id="contributionsTimeline">
+                        <!-- Community contributions will be dynamically added here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Crop Modal -->
+<div class="modal fade" id="addCropModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Heritage Crop</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addCropForm">
+                    <div class="mb-3">
+                        <label class="form-label">Crop Name</label>
+                        <input type="text" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Origin</label>
+                        <input type="text" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Historical Significance</label>
+                        <textarea class="form-control" rows="3" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Current Status</label>
+                        <select class="form-select" required>
+                            <option value="">Select Status</option>
+                            <option value="stable">Stable</option>
+                            <option value="vulnerable">Vulnerable</option>
+                            <option value="endangered">Endangered</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success">Add Crop</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script>
+    // Sample heritage crops data
+    const heritageCrops = [
+        {
+            name: 'Ancient Wheat Variety',
+            origin: 'Mesopotamia',
+            status: 'endangered',
+            image: 'https://source.unsplash.com/400x300/?wheat'
+        },
+        {
+            name: 'Heritage Rice',
+            origin: 'Southeast Asia',
+            status: 'stable',
+            image: 'https://source.unsplash.com/400x300/?rice'
+        },
+        {
+            name: 'Traditional Corn',
+            origin: 'Central America',
+            status: 'vulnerable',
+            image: 'https://source.unsplash.com/400x300/?corn'
+        }
+    ];
+
+    // Populate heritage crop grid
+    function updateCropGrid() {
+        const grid = document.getElementById('heritageCropGrid');
+        grid.innerHTML = '';
+        
+        heritageCrops.forEach(crop => {
+            const col = document.createElement('div');
+            col.className = 'col-md-4 mb-4';
+            col.innerHTML = `
+                <div class="card h-100">
+                    <img src="${crop.image}" class="card-img-top" alt="${crop.name}">
+                    <div class="card-body">
+                        <h5 class="card-title">${crop.name}</h5>
+                        <p class="card-text">Origin: ${crop.origin}</p>
+                        <span class="badge bg-${crop.status === 'stable' ? 'success' : crop.status === 'vulnerable' ? 'warning' : 'danger'}">${crop.status}</span>
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn btn-outline-primary btn-sm">View Details</button>
+                        <button class="btn btn-outline-success btn-sm">Contribute</button>
+                    </div>
+                </div>
+            `;
+            grid.appendChild(col);
+        });
+    }
+
+    // Sample traditional practices data
+    const traditionalPractices = [
+        {
+            name: 'Crop Rotation',
+            region: 'Global',
+            description: 'Ancient practice of rotating crops to maintain soil health.'
+        },
+        {
+            name: 'Companion Planting',
+            region: 'Americas',
+            description: 'Traditional method of planting complementary crops together.'
+        },
+        {
+            name: 'Water Conservation',
+            region: 'Arid Regions',
+            description: 'Traditional techniques for efficient water use in farming.'
+        }
+    ];
+
+    // Populate practices list
+    function updatePracticesList() {
+        const list = document.getElementById('practicesList');
+        list.innerHTML = '';
+        
+        traditionalPractices.forEach(practice => {
+            const item = document.createElement('div');
+            item.className = 'list-group-item';
+            item.innerHTML = `
+                <div class="d-flex w-100 justify-content-between">
+                    <h6 class="mb-1">${practice.name}</h6>
+                    <small class="text-muted">${practice.region}</small>
+                </div>
+                <p class="mb-1">${practice.description}</p>
+                <button class="btn btn-sm btn-outline-primary mt-2">Learn More</button>
+            `;
+            list.appendChild(item);
+        });
+    }
+
+    // Sample community contributions
+    const contributions = [
+        {
+            user: 'Maria G.',
+            action: 'Added documentation for traditional rice farming techniques',
+            timestamp: '2 hours ago'
+        },
+        {
+            user: 'John D.',
+            action: 'Shared seeds of heritage tomato variety',
+            timestamp: '1 day ago'
+        },
+        {
+            user: 'Sarah K.',
+            action: 'Updated status of ancient wheat preservation project',
+            timestamp: '3 days ago'
+        }
+    ];
+
+    // Populate contributions timeline
+    function updateContributionsTimeline() {
+        const timeline = document.getElementById('contributionsTimeline');
+        timeline.innerHTML = '';
+        
+        contributions.forEach(contribution => {
+            const item = document.createElement('div');
+            item.className = 'border-start border-2 ps-3 pb-3';
+            item.innerHTML = `
+                <div class="d-flex justify-content-between">
+                    <strong>${contribution.user}</strong>
+                    <small class="text-muted">${contribution.timestamp}</small>
+                </div>
+                <p class="mb-0">${contribution.action}</p>
+            `;
+            timeline.appendChild(item);
+        });
+    }
+
+    // Initialize all components
+    updateCropGrid();
+    updatePracticesList();
+    updateContributionsTimeline();
+
+    // Heritage Map (simplified version)
+    const mapData = [{
+        type: 'scattergeo',
+        lon: [44, 100, -90],
+        lat: [33, 15, 20],
+        mode: 'markers',
+        marker: {
+            size: 10,
+            color: ['red', 'blue', 'green'],
+            symbol: 'circle'
+        },
+        text: ['Ancient Wheat', 'Heritage Rice', 'Traditional Corn'],
+        name: 'Heritage Crops'
+    }];
+
+    const layout = {
+        geo: {
+            scope: 'world',
+            showland: true,
+            landcolor: 'rgb(243, 243, 243)',
+            countrycolor: 'rgb(204, 204, 204)',
+            showocean: true,
+            oceancolor: 'rgb(230, 230, 255)'
+        },
+        margin: { t: 0, b: 0, l: 0, r: 0 }
+    };
+
+    Plotly.newPlot('heritageMap', mapData, layout);
+</script>
+{% endblock %}

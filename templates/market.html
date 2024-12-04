@@ -1,0 +1,222 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="mb-4">Market Access</h1>
+    
+    <!-- Market Overview -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Price Trends</h5>
+                    <div id="priceTrendChart"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Market Summary</h5>
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            Active Markets
+                            <span class="badge bg-primary rounded-pill">8</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            Open Opportunities
+                            <span class="badge bg-success rounded-pill">12</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            Potential Buyers
+                            <span class="badge bg-info rounded-pill">25</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Market Opportunities -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Market Opportunities</h5>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Market</th>
+                            <th>Current Price</th>
+                            <th>Demand</th>
+                            <th>Trend</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="marketOpportunitiesTable">
+                        <!-- Market opportunities will be dynamically added here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Buyer Connections -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Active Buyers</h5>
+                    <div class="list-group" id="activeBuyersList">
+                        <!-- Active buyers will be dynamically added here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Market Predictions</h5>
+                    <div id="marketPredictionChart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script>
+    // Price Trend Chart
+    const priceTrendData = {
+        x: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+        y: [30, 35, 33, 38, 40],
+        type: 'scatter',
+        name: 'Wheat'
+    };
+
+    const priceTrendData2 = {
+        x: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+        y: [25, 28, 27, 30, 32],
+        type: 'scatter',
+        name: 'Corn'
+    };
+
+    Plotly.newPlot('priceTrendChart', [priceTrendData, priceTrendData2], {
+        margin: { t: 0, b: 30, l: 30, r: 30 }
+    });
+
+    // Market Prediction Chart
+    const predictionData = {
+        x: ['Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
+        y: [42, 45, 43, 41, 44],
+        type: 'scatter',
+        name: 'Predicted Price',
+        line: {
+            dash: 'dot',
+            color: 'rgb(55, 128, 191)'
+        }
+    };
+
+    Plotly.newPlot('marketPredictionChart', [predictionData], {
+        margin: { t: 0, b: 30, l: 30, r: 30 }
+    });
+
+    // Sample market opportunities data
+    const marketOpportunities = [
+        {
+            product: 'Organic Wheat',
+            market: 'Local Market',
+            price: '$350/ton',
+            demand: 'High',
+            trend: 'up'
+        },
+        {
+            product: 'Non-GMO Corn',
+            market: 'Regional Export',
+            price: '$280/ton',
+            demand: 'Medium',
+            trend: 'stable'
+        },
+        {
+            product: 'Soybeans',
+            market: 'International',
+            price: '$420/ton',
+            demand: 'High',
+            trend: 'up'
+        }
+    ];
+
+    // Populate market opportunities table
+    function updateMarketTable() {
+        const tbody = document.getElementById('marketOpportunitiesTable');
+        tbody.innerHTML = '';
+        
+        marketOpportunities.forEach(opportunity => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${opportunity.product}</td>
+                <td>${opportunity.market}</td>
+                <td>${opportunity.price}</td>
+                <td><span class="badge bg-${opportunity.demand === 'High' ? 'success' : 'warning'}">${opportunity.demand}</span></td>
+                <td>
+                    <i class="fas fa-arrow-${opportunity.trend} text-${opportunity.trend === 'up' ? 'success' : 'secondary'}"></i>
+                </td>
+                <td>
+                    <button class="btn btn-sm btn-primary">Connect</button>
+                    <button class="btn btn-sm btn-outline-primary">Details</button>
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+
+    // Sample active buyers data
+    const activeBuyers = [
+        {
+            name: 'Regional Grain Co.',
+            interest: 'Wheat, Corn',
+            rating: 4.8
+        },
+        {
+            name: 'Organic Foods Ltd.',
+            interest: 'Organic Produce',
+            rating: 4.5
+        },
+        {
+            name: 'Global Exports Inc.',
+            interest: 'All Grains',
+            rating: 4.2
+        }
+    ];
+
+    // Populate active buyers list
+    function updateBuyersList() {
+        const list = document.getElementById('activeBuyersList');
+        list.innerHTML = '';
+        
+        activeBuyers.forEach(buyer => {
+            const item = document.createElement('div');
+            item.className = 'list-group-item';
+            item.innerHTML = `
+                <div class="d-flex w-100 justify-content-between">
+                    <h6 class="mb-1">${buyer.name}</h6>
+                    <small class="text-muted">
+                        ${'★'.repeat(Math.floor(buyer.rating))}
+                        ${buyer.rating % 1 >= 0.5 ? '½' : ''}
+                        ${buyer.rating}/5
+                    </small>
+                </div>
+                <p class="mb-1">Interested in: ${buyer.interest}</p>
+                <button class="btn btn-sm btn-outline-success mt-2">Contact Buyer</button>
+            `;
+            list.appendChild(item);
+        });
+    }
+
+    updateMarketTable();
+    updateBuyersList();
+</script>
+{% endblock %}

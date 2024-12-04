@@ -1,0 +1,15 @@
+README.md
+setup.py
+farmfit/__init__.py
+farmfit.egg-info/PKG-INFO
+farmfit.egg-info/SOURCES.txt
+farmfit.egg-info/dependency_links.txt
+farmfit.egg-info/requires.txt
+farmfit.egg-info/top_level.txt
+quantum_analysis/__init__.py
+quantum_analysis/quantum_predictor.py
+quantum_analysis/ui.py
+quantum_analysis/validation.py
+tests/test_analytics_engine.py
+tests/test_data_integration.py
+tests/test_specialized_systems.py

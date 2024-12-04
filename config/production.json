@@ -1,0 +1,65 @@
+{
+  "api": {
+    "domain": "api.farmfit.com",
+    "ssl": true,
+    "rateLimit": {
+      "windowMs": 900000,
+      "max": 1000
+    }
+  },
+  "analytics": {
+    "batchSize": 1000,
+    "workers": 4,
+    "cache": {
+      "enabled": true,
+      "duration": 3600
+    }
+  },
+  "monitoring": {
+    "logging": {
+      "level": "warn",
+      "format": "json"
+    },
+    "metrics": {
+      "enabled": true,
+      "detailed": true
+    },
+    "tracing": {
+      "enabled": true,
+      "sampleRate": 0.1
+    }
+  },
+  "cache": {
+    "driver": "redis",
+    "cluster": {
+      "enabled": true,
+      "nodes": 3
+    }
+  },
+  "storage": {
+    "provider": "s3",
+    "cdn": {
+      "enabled": true,
+      "domain": "cdn.farmfit.com"
+    }
+  },
+  "security": {
+    "ssl": {
+      "enabled": true,
+      "hsts": true
+    },
+    "cors": {
+      "origins": [
+        "https://farmfit.com",
+        "https://www.farmfit.com"
+      ]
+    }
+  },
+  "services": {
+    "scaling": {
+      "minInstances": 3,
+      "maxInstances": 10,
+      "targetCPU": 70
+    }
+  }
+}

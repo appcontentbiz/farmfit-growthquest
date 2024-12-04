@@ -1,0 +1,152 @@
+name: FarmFit CI/CD
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: Install Dependencies
+      run: |
+        npm ci
+        cd mobile && npm ci
+    
+    - name: Run Backend Tests
+      run: npm test
+    
+    - name: Run Mobile Tests
+      run: cd mobile && npm test
+    
+    - name: Run Type Check
+      run: |
+        npm run type-check
+        cd mobile && npm run type-check
+
+  build-web:
+    name: Build Web App
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: Build Web
+      run: |
+        npm ci
+        npm run build
+    
+    - name: Upload Web Build
+      uses: actions/upload-artifact@v3
+      with:
+        name: web-build
+        path: build/
+
+  build-mobile:
+    name: Build Mobile Apps
+    needs: test
+    runs-on: macos-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: Install Dependencies
+      run: cd mobile && npm ci
+    
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.0'
+        bundler-cache: true
+    
+    - name: Install Cocoapods
+      run: |
+        cd mobile/ios
+        pod install
+    
+    - name: Build iOS
+      run: |
+        cd mobile/ios
+        xcodebuild -workspace FarmFit.xcworkspace -scheme FarmFit -configuration Release
+    
+    - name: Build Android
+      run: |
+        cd mobile/android
+        ./gradlew assembleRelease
+    
+    - name: Upload Mobile Builds
+      uses: actions/upload-artifact@v3
+      with:
+        name: mobile-builds
+        path: |
+          mobile/ios/build/Release-iphoneos/FarmFit.app
+          mobile/android/app/build/outputs/apk/release/app-release.apk
+
+  deploy:
+    name: Deploy
+    needs: [build-web, build-mobile]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Download Web Build
+      uses: actions/download-artifact@v3
+      with:
+        name: web-build
+        path: build
+    
+    - name: Download Mobile Builds
+      uses: actions/download-artifact@v3
+      with:
+        name: mobile-builds
+        path: mobile-builds
+    
+    - name: Deploy to AWS
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+    
+    - name: Deploy Web to S3
+      run: |
+        aws s3 sync build/ s3://${{ secrets.AWS_S3_BUCKET }} --delete
+    
+    - name: Invalidate CloudFront
+      run: |
+        aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
+    
+    - name: Upload to App Stores
+      run: |
+        # iOS App Store upload
+        xcrun altool --upload-app -f "mobile-builds/FarmFit.app" -t ios -u "${{ secrets.APPLE_ID }}" -p "${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}"
+        
+        # Google Play Store upload
+        fastlane supply --track production --apk "mobile-builds/app-release.apk" --json-key "${{ secrets.GOOGLE_PLAY_JSON_KEY }}"

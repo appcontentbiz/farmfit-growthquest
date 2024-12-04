@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="mb-4">Analytics Dashboard</h1>
+    
+    <!-- Overview Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h6 class="card-title">Crop Yield</h6>
+                    <h2 class="mb-0">85%</h2>
+                    <small>+5% from last season</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h6 class="card-title">Resource Efficiency</h6>
+                    <h2 class="mb-0">92%</h2>
+                    <small>+3% improvement</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h6 class="card-title">Soil Health</h6>
+                    <h2 class="mb-0">78%</h2>
+                    <small>Optimal range</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <h6 class="card-title">Weather Risk</h6>
+                    <h2 class="mb-0">Low</h2>
+                    <small>Next 7 days</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Crop Performance Analysis</h5>
+                    <div id="cropPerformanceChart"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Resource Distribution</h5>
+                    <div id="resourcePieChart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Weather and Predictions -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Weather Forecast</h5>
+                    <div id="weatherChart"></div>
+                    <div class="mt-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span>Temperature</span>
+                            <span class="text-primary">24°C</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span>Humidity</span>
+                            <span class="text-info">65%</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span>Rainfall Probability</span>
+                            <span class="text-success">30%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">AI-Powered Insights</h5>
+                    <div class="list-group">
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">Optimal Irrigation Schedule</h6>
+                                <small class="text-success">High Confidence</small>
+                            </div>
+                            <p class="mb-1">Recommended irrigation in 2 days based on soil moisture and weather forecast.</p>
+                        </div>
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">Pest Risk Alert</h6>
+                                <small class="text-warning">Medium Risk</small>
+                            </div>
+                            <p class="mb-1">Increased risk of aphid infestation due to current weather conditions.</p>
+                        </div>
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">Yield Prediction</h6>
+                                <small class="text-info">Updated Today</small>
+                            </div>
+                            <p class="mb-1">Expected yield increase of 8% based on current growth patterns.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script>
+    // Crop Performance Chart
+    const cropData = {
+        x: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5'],
+        y: [80, 82, 85, 88, 85],
+        type: 'scatter',
+        name: 'Growth Rate'
+    };
+
+    const targetData = {
+        x: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5'],
+        y: [80, 82, 84, 86, 88],
+        type: 'scatter',
+        name: 'Target',
+        line: {
+            dash: 'dot'
+        }
+    };
+
+    Plotly.newPlot('cropPerformanceChart', [cropData, targetData], {
+        margin: { t: 0, b: 30, l: 30, r: 30 }
+    });
+
+    // Resource Distribution Pie Chart
+    const resourceData = {
+        values: [30, 25, 20, 15, 10],
+        labels: ['Water', 'Fertilizer', 'Labor', 'Equipment', 'Other'],
+        type: 'pie'
+    };
+
+    Plotly.newPlot('resourcePieChart', [resourceData], {
+        margin: { t: 0, b: 0, l: 0, r: 0 }
+    });
+
+    // Weather Forecast Chart
+    const weatherData = {
+        x: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+        y: [24, 25, 23, 26, 24],
+        type: 'scatter',
+        name: 'Temperature'
+    };
+
+    const rainData = {
+        x: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+        y: [20, 30, 45, 30, 20],
+        type: 'bar',
+        name: 'Rain Probability',
+        yaxis: 'y2'
+    };
+
+    const layout = {
+        margin: { t: 0, b: 30, l: 30, r: 30 },
+        yaxis: {
+            title: 'Temperature (°C)'
+        },
+        yaxis2: {
+            title: 'Rain Probability (%)',
+            overlaying: 'y',
+            side: 'right'
+        }
+    };
+
+    Plotly.newPlot('weatherChart', [weatherData, rainData], layout);
+</script>
+{% endblock %}

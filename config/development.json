@@ -1,0 +1,67 @@
+{
+  "api": {
+    "domain": "localhost",
+    "port": 8000,
+    "ssl": false,
+    "rateLimit": {
+      "windowMs": 900000,
+      "max": 10000
+    }
+  },
+  "analytics": {
+    "batchSize": 10,
+    "workers": 1,
+    "cache": {
+      "enabled": false
+    }
+  },
+  "monitoring": {
+    "logging": {
+      "level": "debug",
+      "format": "pretty"
+    },
+    "metrics": {
+      "enabled": true,
+      "detailed": true
+    },
+    "tracing": {
+      "enabled": true,
+      "sampleRate": 1.0
+    }
+  },
+  "cache": {
+    "driver": "memory",
+    "cluster": {
+      "enabled": false
+    }
+  },
+  "storage": {
+    "provider": "local",
+    "path": "./storage",
+    "cdn": {
+      "enabled": false
+    }
+  },
+  "security": {
+    "ssl": {
+      "enabled": false
+    },
+    "cors": {
+      "origins": ["*"]
+    }
+  },
+  "services": {
+    "scaling": {
+      "minInstances": 1,
+      "maxInstances": 1,
+      "targetCPU": 80
+    }
+  },
+  "debug": {
+    "enabled": true,
+    "sqlLogging": true,
+    "requestLogging": true,
+    "cacheLogging": true,
+    "stackTraces": true
+  }
+}

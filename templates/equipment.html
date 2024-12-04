@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="mb-4">Equipment Management</h1>
+    
+    <!-- Equipment Dashboard -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Equipment Overview</h5>
+                    <div id="equipmentChart"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Maintenance Schedule</h5>
+                    <div id="maintenanceCalendar"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Equipment List -->
+    <div class="card">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="card-title">Equipment Inventory</h5>
+                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addEquipmentModal">
+                    <i class="fas fa-plus"></i> Add Equipment
+                </button>
+            </div>
+            <div class="table-responsive">
+                <table class="table" id="equipmentTable">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Location</th>
+                            <th>Next Maintenance</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="equipmentTableBody">
+                        <!-- Equipment items will be dynamically added here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Equipment Modal -->
+<div class="modal fade" id="addEquipmentModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Equipment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addEquipmentForm">
+                    <div class="mb-3">
+                        <label class="form-label">Equipment Name</label>
+                        <input type="text" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Type</label>
+                        <select class="form-select" required>
+                            <option value="">Select Type</option>
+                            <option value="tractor">Tractor</option>
+                            <option value="harvester">Harvester</option>
+                            <option value="irrigation">Irrigation System</option>
+                            <option value="tools">Hand Tools</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Location</label>
+                        <input type="text" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Next Maintenance Date</label>
+                        <input type="date" class="form-control" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success">Add Equipment</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script>
+    // Equipment Chart
+    const equipmentData = {
+        values: [30, 20, 15, 35],
+        labels: ['Tractors', 'Harvesters', 'Irrigation', 'Tools'],
+        type: 'pie'
+    };
+
+    Plotly.newPlot('equipmentChart', [equipmentData]);
+
+    // Sample equipment data
+    const equipmentList = [
+        {
+            name: 'John Deere Tractor',
+            type: 'Tractor',
+            status: 'Active',
+            location: 'Field A',
+            maintenance: '2024-02-15'
+        },
+        {
+            name: 'Irrigation System',
+            type: 'Irrigation',
+            status: 'Maintenance',
+            location: 'Field B',
+            maintenance: '2024-01-30'
+        }
+    ];
+
+    // Populate equipment table
+    function updateEquipmentTable() {
+        const tbody = document.getElementById('equipmentTableBody');
+        tbody.innerHTML = '';
+        
+        equipmentList.forEach(equipment => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${equipment.name}</td>
+                <td>${equipment.type}</td>
+                <td><span class="badge bg-${equipment.status === 'Active' ? 'success' : 'warning'}">${equipment.status}</span></td>
+                <td>${equipment.location}</td>
+                <td>${equipment.maintenance}</td>
+                <td>
+                    <button class="btn btn-sm btn-primary me-1"><i class="fas fa-edit"></i></button>
+                    <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+
+    updateEquipmentTable();
+</script>
+{% endblock %}
