@@ -1,0 +1,9 @@
+{
+  "name": "farmfit-web-demo",
+  "version": "1.0.0",
+  "description": "FarmFit Web Demo",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  }
+}

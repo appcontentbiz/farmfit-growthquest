@@ -1,0 +1,235 @@
+// Chart configurations and utilities
+const ChartConfigs = {
+    equipment: {
+        type: 'bar',
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Equipment Operational Status'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    title: {
+                        display: true,
+                        text: 'Operational Status (%)'
+                    }
+                }
+            }
+        }
+    },
+    
+    workforce: {
+        type: 'line',
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Team Performance Trends'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    title: {
+                        display: true,
+                        text: 'Efficiency (%)'
+                    }
+                }
+            }
+        }
+    },
+    
+    gene: {
+        type: 'line',
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Gene Expression Levels'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    title: {
+                        display: true,
+                        text: 'Expression Level (%)'
+                    }
+                }
+            },
+            elements: {
+                line: {
+                    tension: 0.4
+                }
+            }
+        }
+    },
+    
+    climate: {
+        type: 'line',
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Climate Conditions'
+                }
+            },
+            scales: {
+                y: {
+                    type: 'linear',
+                    display: true,
+                    position: 'left',
+                    title: {
+                        display: true,
+                        text: 'Temperature (°C)'
+                    }
+                },
+                y1: {
+                    type: 'linear',
+                    display: true,
+                    position: 'right',
+                    title: {
+                        display: true,
+                        text: 'Rainfall (mm)'
+                    },
+                    grid: {
+                        drawOnChartArea: false
+                    }
+                }
+            }
+        }
+    }
+};
+
+class ChartManager {
+    constructor() {
+        this.charts = {};
+    }
+
+    createChart(type, ctx) {
+        if (!ChartConfigs[type]) return null;
+
+        const config = this.getChartConfig(type);
+        const chart = new Chart(ctx, config);
+        this.charts[type] = chart;
+        
+        // Register with state manager
+        window.demoState.registerChart(type, chart);
+        
+        return chart;
+    }
+
+    getChartConfig(type) {
+        const baseConfig = ChartConfigs[type];
+        const data = window.FarmFitDemo.demoData[type];
+
+        switch(type) {
+            case 'equipment':
+                return {
+                    type: baseConfig.type,
+                    data: {
+                        labels: data.labels,
+                        datasets: [{
+                            label: 'Operational Status',
+                            data: data.data,
+                            backgroundColor: 'rgba(46, 204, 113, 0.6)',
+                            borderColor: 'rgb(46, 204, 113)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: baseConfig.options
+                };
+
+            case 'workforce':
+                return {
+                    type: baseConfig.type,
+                    data: {
+                        labels: data.labels,
+                        datasets: [{
+                            label: 'Team Efficiency',
+                            data: data.data,
+                            borderColor: 'rgb(52, 152, 219)',
+                            backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                            fill: true
+                        }]
+                    },
+                    options: baseConfig.options
+                };
+
+            case 'gene':
+                return {
+                    type: baseConfig.type,
+                    data: {
+                        labels: data.labels,
+                        datasets: [{
+                            label: 'Expression Level',
+                            data: data.data,
+                            borderColor: 'rgb(155, 89, 182)',
+                            backgroundColor: 'rgba(155, 89, 182, 0.1)',
+                            fill: true
+                        }]
+                    },
+                    options: baseConfig.options
+                };
+
+            case 'climate':
+                return {
+                    type: baseConfig.type,
+                    data: {
+                        labels: data.labels,
+                        datasets: [
+                            {
+                                label: 'Temperature',
+                                data: data.temperature,
+                                borderColor: 'rgb(231, 76, 60)',
+                                backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                                yAxisID: 'y'
+                            },
+                            {
+                                label: 'Rainfall',
+                                data: data.rainfall,
+                                borderColor: 'rgb(52, 152, 219)',
+                                backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                                yAxisID: 'y1'
+                            }
+                        ]
+                    },
+                    options: baseConfig.options
+                };
+
+            default:
+                return null;
+        }
+    }
+
+    destroyChart(type) {
+        if (this.charts[type]) {
+            this.charts[type].destroy();
+            delete this.charts[type];
+            window.demoState.unregisterChart(type);
+        }
+    }
+
+    destroyAllCharts() {
+        Object.keys(this.charts).forEach(type => {
+            this.destroyChart(type);
+        });
+    }
+}
+
+// Create global chart manager instance
+window.chartManager = new ChartManager();
