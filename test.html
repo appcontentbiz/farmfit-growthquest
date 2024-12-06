@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FarmFit - GrowthQuest Test Page</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .feature-card {
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        .data-container {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        .resource-link {
+            text-decoration: none;
+            color: #0d6efd;
+            display: block;
+            margin-bottom: 10px;
+        }
+        .resource-link:hover {
+            color: #0a58ca;
+        }
+        .resource-description {
+            font-size: 0.9em;
+            color: #6c757d;
+        }
+        .test-form {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+        }
+        .form-label {
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">FarmFit - GrowthQuest Features</h1>
+        
+        <!-- API Status -->
+        <div class="alert alert-info" id="apiStatus">
+            Checking API connection...
+        </div>
+
+        <!-- Feature Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card feature-card" onclick="loadData('fieldOperations')">
+                    <div class="card-body">
+                        <h5 class="card-title">Field Operations</h5>
+                        <p class="card-text">View and manage field activities</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card feature-card" onclick="loadData('cropHealth')">
+                    <div class="card-body">
+                        <h5 class="card-title">Crop Health</h5>
+                        <p class="card-text">Monitor crop conditions</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card feature-card" onclick="loadData('weatherPlanning')">
+                    <div class="card-body">
+                        <h5 class="card-title">Weather Planning</h5>
+                        <p class="card-text">Weather forecasts and planning</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card feature-card" onclick="loadData('equipment')">
+                    <div class="card-body">
+                        <h5 class="card-title">Equipment</h5>
+                        <p class="card-text">Track equipment status</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Display -->
+        <div class="card mb-4">
+            <div class="card-body data-container" id="dataDisplay">
+                <p class="text-muted">Click a feature card above to view data</p>
+            </div>
+        </div>
+
+        <!-- Resources Section -->
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title mb-4">Resources</h5>
+                <div id="resourcesDisplay">
+                    Loading resources...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:5000/api';
+
+        // Check API Status
+        async function checkApiStatus() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/test`);
+                const data = await response.json();
+                if (data.status === 'success') {
+                    document.getElementById('apiStatus').className = 'alert alert-success';
+                    document.getElementById('apiStatus').textContent = 'API Connected Successfully!';
+                }
+            } catch (error) {
+                document.getElementById('apiStatus').className = 'alert alert-danger';
+                document.getElementById('apiStatus').textContent = 'API Connection Failed!';
+            }
+        }
+
+        // Load Data for Feature
+        async function loadData(feature) {
+            const dataDisplay = document.getElementById('dataDisplay');
+            dataDisplay.innerHTML = '<div class="text-center"><div class="spinner-border" role="status"></div></div>';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/${feature}`);
+                const data = await response.json();
+                
+                let html = '';
+                switch(feature) {
+                    case 'fieldOperations':
+                        html = formatFieldOperations(data);
+                        break;
+                    case 'cropHealth':
+                        html = formatCropHealth(data);
+                        break;
+                    case 'weatherPlanning':
+                        html = formatWeather(data);
+                        break;
+                    case 'equipment':
+                        html = formatEquipment(data);
+                        break;
+                }
+                dataDisplay.innerHTML = html;
+            } catch (error) {
+                dataDisplay.innerHTML = '<div class="alert alert-danger">Error loading data</div>';
+            }
+        }
+
+        // Format Field Operations Data
+        function formatFieldOperations(data) {
+            let html = '<h4>Active Field Operations</h4>';
+            
+            // Add test form at the top
+            html += `
+                <div class="test-form mb-4">
+                    <h5>Test Your Farm Data</h5>
+                    <form onsubmit="return simulateFieldData(event)">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Field Size (acres)</label>
+                                <input type="number" class="form-control" id="fieldSize" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Crop Type</label>
+                                <select class="form-control" id="cropType" required>
+                                    <option value="Corn">Corn</option>
+                                    <option value="Soybeans">Soybeans</option>
+                                    <option value="Wheat">Wheat</option>
+                                    <option value="Cotton">Cotton</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Planting Progress (%)</label>
+                                <input type="number" class="form-control" id="plantingProgress" min="0" max="100" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Soil Type</label>
+                                <select class="form-control" id="soilType" required>
+                                    <option value="Clay">Clay</option>
+                                    <option value="Loam">Loam</option>
+                                    <option value="Sandy">Sandy</option>
+                                    <option value="Silt">Silt</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Simulate Results</button>
+                    </form>
+                </div>
+            `;
+
+            data.active_operations.forEach(field => {
+                html += `
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">${field.field_name} (${field.size})</h5>
+                            <p class="card-text">Current Crop: ${field.current_crop}</p>
+                            <h6>Activities:</h6>
+                            <ul class="list-group">
+                                ${field.activities.map(activity => `
+                                    <li class="list-group-item">
+                                        <strong>${activity.type}</strong> - ${activity.status}
+                                        ${activity.completion ? `<div class="progress">
+                                            <div class="progress-bar" role="progressbar" style="width: ${activity.completion}%">${activity.completion}%</div>
+                                        </div>` : ''}
+                                        <p class="mb-0 mt-2">${activity.details || ''}</p>
+                                    </li>
+                                `).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += '<h5>Recommendations</h5><ul class="list-group">';
+            data.recommendations.forEach(rec => {
+                html += `<li class="list-group-item">${rec}</li>`;
+            });
+            html += '</ul>';
+
+            return html;
+        }
+
+        // Format Crop Health Data
+        function formatCropHealth(data) {
+            let html = '<h4>Crop Health Metrics</h4>';
+            
+            // Add test form at the top
+            html += `
+                <div class="test-form mb-4">
+                    <h5>Test Your Crop Health Data</h5>
+                    <form onsubmit="return simulateCropHealth(event)">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Soil Moisture (%)</label>
+                                <input type="number" class="form-control" id="soilMoisture" min="0" max="100" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Growth Stage</label>
+                                <select class="form-control" id="growthStage" required>
+                                    <option value="Emergence">Emergence</option>
+                                    <option value="Vegetative">Vegetative</option>
+                                    <option value="Flowering">Flowering</option>
+                                    <option value="Maturity">Maturity</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Nitrogen Level (ppm)</label>
+                                <input type="number" class="form-control" id="nitrogenLevel" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Phosphorus Level (ppm)</label>
+                                <input type="number" class="form-control" id="phosphorusLevel" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Potassium Level (ppm)</label>
+                                <input type="number" class="form-control" id="potassiumLevel" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Analyze Health</button>
+                    </form>
+                </div>
+            `;
+
+            data.field_metrics.forEach(field => {
+                html += `
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">${field.field_name} - ${field.crop}</h5>
+                            <p>Growth Stage: ${field.growth_stage}</p>
+                            <p>Health Index: ${field.health_index}%</p>
+                            
+                            <h6>Soil Moisture:</h6>
+                            <p>Current: ${field.metrics.soil_moisture.current}% (${field.metrics.soil_moisture.status})<br>
+                            Optimal Range: ${field.metrics.soil_moisture.optimal_range}</p>
+                            
+                            <h6>Nutrient Levels:</h6>
+                            <ul class="list-group mb-3">
+                                ${Object.entries(field.metrics.nutrient_levels).map(([nutrient, data]) => `
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        ${nutrient.charAt(0).toUpperCase() + nutrient.slice(1)}
+                                        <span class="badge bg-${data.status === 'Good' ? 'success' : 'warning'}">${data.value} ${data.unit}</span>
+                                    </li>
+                                `).join('')}
+                            </ul>
+                            
+                            <p>Pest Pressure: ${field.metrics.pest_pressure}</p>
+                            <p>Disease Risk: ${field.metrics.disease_risk}</p>
+                            
+                            <h6>Actions Needed:</h6>
+                            <ul class="list-group">
+                                ${field.actions_needed.map(action => `
+                                    <li class="list-group-item">${action}</li>
+                                `).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                `;
+            });
+
+            if (data.alerts && data.alerts.length > 0) {
+                html += '<h5>Alerts</h5>';
+                data.alerts.forEach(alert => {
+                    html += `
+                        <div class="alert alert-warning">
+                            <strong>${alert.type}:</strong> ${alert.message}<br>
+                            <small>Recommended Action: ${alert.recommended_action}</small>
+                        </div>
+                    `;
+                });
+            }
+
+            return html;
+        }
+
+        // Format Weather Data
+        function formatWeather(data) {
+            let html = '<h4>Weather Planning</h4>';
+            
+            // Add test form at the top
+            html += `
+                <div class="test-form mb-4">
+                    <h5>Test Your Weather Impact</h5>
+                    <form onsubmit="return simulateWeather(event)">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Current Temperature (°F)</label>
+                                <input type="number" class="form-control" id="currentTemp" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Soil Temperature (°F)</label>
+                                <input type="number" class="form-control" id="soilTemp" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Humidity (%)</label>
+                                <input type="number" class="form-control" id="humidity" min="0" max="100" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Chance of Rain (%)</label>
+                                <input type="number" class="form-control" id="rainChance" min="0" max="100" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Wind Speed (mph)</label>
+                                <input type="number" class="form-control" id="windSpeed" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Planned Activity</label>
+                                <select class="form-control" id="plannedActivity" required>
+                                    <option value="Planting">Planting</option>
+                                    <option value="Harvesting">Harvesting</option>
+                                    <option value="Fertilizing">Fertilizing</option>
+                                    <option value="Spraying">Spraying</option>
+                                    <option value="Irrigation">Irrigation</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Analyze Weather Impact</button>
+                    </form>
+                </div>
+            `;
+
+            if (data.forecast && data.forecast.length > 0) {
+                html += '<h5>Forecast</h5>';
+                data.forecast.forEach(day => {
+                    html += `
+                        <div class="card mb-2">
+                            <div class="card-body">
+                                <h6>${day.date}</h6>
+                                <p>
+                                    ${day.conditions} | High: ${day.high_temp}°F | Low: ${day.low_temp}°F<br>
+                                    Precipitation: ${day.precipitation_chance}% | Wind: ${day.wind_speed}<br>
+                                    Growing Degree Days: ${day.growing_degree_days}
+                                </p>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            if (data.alerts && data.alerts.length > 0) {
+                html += '<h5>Weather Alerts</h5>';
+                data.alerts.forEach(alert => {
+                    html += `
+                        <div class="alert alert-info">
+                            <strong>${alert.type}:</strong> ${alert.message}<br>
+                            <small>Impact: ${alert.impact}</small>
+                        </div>
+                    `;
+                });
+            }
+
+            return html;
+        }
+
+        // Format Equipment Data
+        function formatEquipment(data) {
+            let html = '<h4>Equipment Management</h4>';
+            
+            // Add test form at the top
+            html += `
+                <div class="test-form mb-4">
+                    <h5>Test Your Equipment Management</h5>
+                    <form onsubmit="return simulateEquipment(event)">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Equipment Type</label>
+                                <select class="form-control" id="equipmentType" required>
+                                    <option value="Tractor">Tractor</option>
+                                    <option value="Harvester">Harvester</option>
+                                    <option value="Planter">Planter</option>
+                                    <option value="Sprayer">Sprayer</option>
+                                    <option value="Irrigation">Irrigation System</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Equipment Age (years)</label>
+                                <input type="number" class="form-control" id="equipmentAge" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Hours Used</label>
+                                <input type="number" class="form-control" id="hoursUsed" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Last Service (days ago)</label>
+                                <input type="number" class="form-control" id="lastService" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Fuel Level (%)</label>
+                                <input type="number" class="form-control" id="fuelLevel" min="0" max="100" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label">Recent Issues</label>
+                                <select class="form-control" id="recentIssues" multiple>
+                                    <option value="noise">Unusual Noise</option>
+                                    <option value="performance">Performance Issues</option>
+                                    <option value="leaks">Fluid Leaks</option>
+                                    <option value="electrical">Electrical Problems</option>
+                                    <option value="none">No Issues</option>
+                                </select>
+                                <small class="form-text text-muted">Hold Ctrl/Cmd to select multiple</small>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Analyze Equipment</button>
+                    </form>
+                </div>
+            `;
+
+            data.active_fleet.forEach(equipment => {
+                html += `
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">${equipment.name}</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>ID:</strong> ${equipment.id}</p>
+                                    <p><strong>Status:</strong> ${equipment.status}</p>
+                                    <p><strong>Location:</strong> ${equipment.current_location}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Fuel Level:</strong> ${equipment.fuel_level}</p>
+                                    <p><strong>Hours Used:</strong> ${equipment.hours_used}</p>
+                                    <p><strong>Next Service:</strong> ${equipment.maintenance.next_service_due}</p>
+                                </div>
+                            </div>
+                            
+                            <h6>Maintenance History</h6>
+                            <ul class="list-group mb-3">
+                                ${equipment.maintenance.recent_repairs.map(repair => `
+                                    <li class="list-group-item">
+                                        <strong>${repair.date}:</strong> ${repair.type}<br>
+                                        <small>${repair.description}</small>
+                                    </li>
+                                `).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                `;
+            });
+
+            if (data.maintenance_schedule && data.maintenance_schedule.length > 0) {
+                html += '<h5>Upcoming Maintenance</h5>';
+                data.maintenance_schedule.forEach(schedule => {
+                    html += `
+                        <div class="card mb-2">
+                            <div class="card-body">
+                                <h6>${schedule.task} - ${schedule.due_date}</h6>
+                                <p>Duration: ${schedule.estimated_duration}</p>
+                                <p>Parts Needed: ${schedule.parts_needed.join(', ')}</p>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            return html;
+        }
+
+        // Add simulation functions
+        function simulateFieldData(event) {
+            event.preventDefault();
+            const fieldSize = document.getElementById('fieldSize').value;
+            const cropType = document.getElementById('cropType').value;
+            const plantingProgress = document.getElementById('plantingProgress').value;
+            const soilType = document.getElementById('soilType').value;
+
+            // Generate recommendations based on input
+            const recommendations = [];
+            if (plantingProgress < 50) {
+                recommendations.push(`Consider increasing planting rate for ${cropType}`);
+            }
+            if (soilType === 'Clay') {
+                recommendations.push('Monitor soil drainage carefully');
+            }
+            if (fieldSize > 50) {
+                recommendations.push('Consider sectional planting approach');
+            }
+
+            // Display simulated results
+            const resultsHtml = `
+                <div class="alert alert-success mt-3">
+                    <h5>Simulation Results</h5>
+                    <p><strong>Field Analysis:</strong></p>
+                    <ul>
+                        <li>Field Size: ${fieldSize} acres - ${fieldSize > 50 ? 'Large scale operation' : 'Medium scale operation'}</li>
+                        <li>Crop: ${cropType} - ${getOptimalPlantingWindow(cropType)}</li>
+                        <li>Progress: ${plantingProgress}% complete</li>
+                        <li>Soil Type: ${soilType} - ${getSoilRecommendations(soilType)}</li>
+                    </ul>
+                    <p><strong>Recommendations:</strong></p>
+                    <ul>
+                        ${recommendations.map(rec => `<li>${rec}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+            
+            document.getElementById('dataDisplay').insertAdjacentHTML('afterbegin', resultsHtml);
+            return false;
+        }
+
+        function simulateCropHealth(event) {
+            event.preventDefault();
+            const moisture = document.getElementById('soilMoisture').value;
+            const stage = document.getElementById('growthStage').value;
+            const nitrogen = document.getElementById('nitrogenLevel').value;
+            const phosphorus = document.getElementById('phosphorusLevel').value;
+            const potassium = document.getElementById('potassiumLevel').value;
+
+            // Analysis based on input values
+            const moistureStatus = analyzeMoisture(moisture);
+            const nutrientStatus = analyzeNutrients(nitrogen, phosphorus, potassium);
+            
+            const resultsHtml = `
+                <div class="alert alert-success mt-3">
+                    <h5>Crop Health Analysis</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Current Status:</h6>
+                            <ul>
+                                <li>Moisture: ${moistureStatus.status}</li>
+                                <li>Growth Stage: ${stage}</li>
+                                <li>Overall Nutrient Status: ${nutrientStatus.overall}</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Recommendations:</h6>
+                            <ul>
+                                ${moistureStatus.recommendation ? `<li>${moistureStatus.recommendation}</li>` : ''}
+                                ${nutrientStatus.recommendations.map(rec => `<li>${rec}</li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('dataDisplay').insertAdjacentHTML('afterbegin', resultsHtml);
+            return false;
+        }
+
+        function simulateWeather(event) {
+            event.preventDefault();
+            const temp = document.getElementById('currentTemp').value;
+            const soilTemp = document.getElementById('soilTemp').value;
+            const humidity = document.getElementById('humidity').value;
+            const rainChance = document.getElementById('rainChance').value;
+            const windSpeed = document.getElementById('windSpeed').value;
+            const activity = document.getElementById('plannedActivity').value;
+
+            // Analyze conditions for the planned activity
+            const conditions = analyzeWeatherConditions(temp, soilTemp, humidity, rainChance, windSpeed, activity);
+            
+            const resultsHtml = `
+                <div class="alert alert-${conditions.suitable ? 'success' : 'warning'} mt-3">
+                    <h5>Weather Impact Analysis</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Conditions Assessment:</h6>
+                            <ul>
+                                <li>Temperature: ${analyzeTemperature(temp, activity)}</li>
+                                <li>Soil Temperature: ${analyzeSoilTemp(soilTemp, activity)}</li>
+                                <li>Wind Conditions: ${analyzeWind(windSpeed, activity)}</li>
+                                <li>Moisture Conditions: ${analyzeRainHumidity(rainChance, humidity)}</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Recommendations:</h6>
+                            <ul>
+                                ${conditions.recommendations.map(rec => `<li>${rec}</li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <strong>Overall Assessment:</strong> ${conditions.suitable ? 
+                            'Conditions are suitable for ' + activity.toLowerCase() :
+                            'Consider rescheduling ' + activity.toLowerCase()}
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('dataDisplay').insertAdjacentHTML('afterbegin', resultsHtml);
+            return false;
+        }
+
+        function simulateEquipment(event) {
+            event.preventDefault();
+            const type = document.getElementById('equipmentType').value;
+            const age = document.getElementById('equipmentAge').value;
+            const hours = document.getElementById('hoursUsed').value;
+            const lastService = document.getElementById('lastService').value;
+            const fuelLevel = document.getElementById('fuelLevel').value;
+            const issues = Array.from(document.getElementById('recentIssues').selectedOptions).map(opt => opt.value);
+
+            // Analyze equipment condition
+            const analysis = analyzeEquipmentCondition(type, age, hours, lastService, fuelLevel, issues);
+            
+            const resultsHtml = `
+                <div class="alert alert-${analysis.status === 'Critical' ? 'danger' : 
+                                        analysis.status === 'Warning' ? 'warning' : 'success'} mt-3">
+                    <h5>Equipment Analysis</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Current Status:</h6>
+                            <ul>
+                                <li>Overall Condition: ${analysis.status}</li>
+                                <li>Maintenance Status: ${analysis.maintenanceStatus}</li>
+                                <li>Operational Efficiency: ${analysis.efficiency}%</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Action Items:</h6>
+                            <ul>
+                                ${analysis.recommendations.map(rec => `<li>${rec}</li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <strong>Next Steps:</strong> ${analysis.nextSteps}
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('dataDisplay').insertAdjacentHTML('afterbegin', resultsHtml);
+            return false;
+        }
+
+        // Helper functions for analysis
+        function getOptimalPlantingWindow(crop) {
+            const windows = {
+                'Corn': 'Early spring when soil temperature reaches 50°F',
+                'Soybeans': 'Late spring to early summer',
+                'Wheat': 'Fall or early spring depending on variety',
+                'Cotton': 'When soil temperature is above 65°F'
+            };
+            return windows[crop] || 'Consult local extension office';
+        }
+
+        function getSoilRecommendations(soilType) {
+            const recommendations = {
+                'Clay': 'Good nutrient retention, but watch drainage',
+                'Loam': 'Excellent for most crops, maintain organic matter',
+                'Sandy': 'Frequent irrigation and fertilization needed',
+                'Silt': 'Good moisture retention, watch for compaction'
+            };
+            return recommendations[soilType];
+        }
+
+        function analyzeMoisture(moisture) {
+            if (moisture < 30) {
+                return {
+                    status: 'Low',
+                    recommendation: 'Increase irrigation frequency'
+                };
+            } else if (moisture > 80) {
+                return {
+                    status: 'High',
+                    recommendation: 'Improve drainage or reduce irrigation'
+                };
+            }
+            return {
+                status: 'Optimal',
+                recommendation: 'Maintain current moisture management'
+            };
+        }
+
+        function analyzeNutrients(n, p, k) {
+            const recommendations = [];
+            let status = 'Good';
+
+            if (n < 40) {
+                recommendations.push('Apply nitrogen fertilizer');
+                status = 'Needs Attention';
+            }
+            if (p < 20) {
+                recommendations.push('Supplement phosphorus');
+                status = 'Needs Attention';
+            }
+            if (k < 150) {
+                recommendations.push('Add potassium amendments');
+                status = 'Needs Attention';
+            }
+
+            return {
+                overall: status,
+                recommendations: recommendations.length ? recommendations : ['Maintain current nutrient levels']
+            };
+        }
+
+        // Weather analysis helper functions
+        function analyzeWeatherConditions(temp, soilTemp, humidity, rainChance, windSpeed, activity) {
+            const recommendations = [];
+            let suitable = true;
+
+            // Activity-specific checks
+            switch(activity) {
+                case 'Planting':
+                    if (soilTemp < 50) {
+                        recommendations.push('Soil temperature too low for optimal germination');
+                        suitable = false;
+                    }
+                    if (rainChance > 60) {
+                        recommendations.push('High chance of rain may affect soil workability');
+                        suitable = false;
+                    }
+                    break;
+                case 'Spraying':
+                    if (windSpeed > 10) {
+                        recommendations.push('Wind speed too high for safe spraying');
+                        suitable = false;
+                    }
+                    if (rainChance > 30) {
+                        recommendations.push('Rain may reduce treatment effectiveness');
+                        suitable = false;
+                    }
+                    break;
+                case 'Harvesting':
+                    if (humidity > 80) {
+                        recommendations.push('High humidity may affect crop moisture content');
+                        suitable = false;
+                    }
+                    if (rainChance > 40) {
+                        recommendations.push('Monitor rain forecast closely');
+                        suitable = false;
+                    }
+                    break;
+            }
+
+            return {
+                suitable,
+                recommendations: recommendations.length ? recommendations : ['Conditions are favorable for ' + activity.toLowerCase()]
+            };
+        }
+
+        function analyzeTemperature(temp, activity) {
+            if (activity === 'Planting' && temp < 50) return 'Too cold for planting';
+            if (temp > 95) return 'Heat stress risk';
+            if (temp < 32) return 'Freezing conditions';
+            return 'Acceptable range';
+        }
+
+        function analyzeSoilTemp(temp, activity) {
+            if (activity === 'Planting') {
+                if (temp < 50) return 'Too cold for germination';
+                if (temp > 85) return 'May affect seed viability';
+            }
+            return 'Optimal range';
+        }
+
+        function analyzeWind(speed, activity) {
+            if (activity === 'Spraying' && speed > 10) return 'Too windy for spraying';
+            if (speed > 20) return 'High wind warning';
+            return 'Acceptable conditions';
+        }
+
+        function analyzeRainHumidity(rainChance, humidity) {
+            if (rainChance > 70) return 'High precipitation risk';
+            if (humidity > 85) return 'High humidity conditions';
+            return 'Favorable conditions';
+        }
+
+        // Equipment analysis helper functions
+        function analyzeEquipmentCondition(type, age, hours, lastService, fuelLevel, issues) {
+            let status = 'Good';
+            let efficiency = 100;
+            const recommendations = [];
+            
+            // Age analysis
+            if (age > 10) {
+                efficiency -= 10;
+                recommendations.push('Consider upgrade or major overhaul');
+            }
+
+            // Usage hours analysis
+            if (hours > 2000) {
+                efficiency -= 15;
+                recommendations.push('Schedule comprehensive maintenance');
+            }
+
+            // Service interval analysis
+            if (lastService > 90) {
+                efficiency -= 20;
+                status = 'Warning';
+                recommendations.push('Immediate service required');
+            }
+
+            // Fuel level warning
+            if (fuelLevel < 20) {
+                recommendations.push('Refuel needed soon');
+            }
+
+            // Issues analysis
+            if (issues.includes('noise')) {
+                status = 'Warning';
+                recommendations.push('Diagnostic check for unusual noise');
+            }
+            if (issues.includes('performance')) {
+                status = 'Warning';
+                efficiency -= 25;
+                recommendations.push('Performance optimization needed');
+            }
+            if (issues.includes('leaks')) {
+                status = 'Critical';
+                recommendations.push('Repair fluid leaks immediately');
+            }
+
+            // Calculate maintenance status
+            const maintenanceStatus = lastService > 90 ? 'Overdue' :
+                                    lastService > 60 ? 'Due Soon' : 'Up to Date';
+
+            // Adjust final status
+            if (efficiency < 60) status = 'Critical';
+            else if (efficiency < 80) status = 'Warning';
+
+            return {
+                status,
+                efficiency: Math.max(0, efficiency),
+                maintenanceStatus,
+                recommendations,
+                nextSteps: status === 'Critical' ? 'Schedule immediate maintenance' :
+                          status === 'Warning' ? 'Plan maintenance within 2 weeks' :
+                          'Continue regular maintenance schedule'
+            };
+        }
+
+        // Load Resources
+        async function loadResources() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/resources`);
+                const data = await response.json();
+                
+                let html = '<div class="row">';
+                
+                // Grants Section
+                html += `
+                    <div class="col-md-4">
+                        <h6>Grants and Funding</h6>
+                        ${data.grants.map(grant => `
+                            <a href="${grant.url}" target="_blank" class="resource-link">
+                                ${grant.name}
+                                <div class="resource-description">${grant.description}</div>
+                            </a>
+                        `).join('')}
+                    </div>
+                `;
+
+                // YouTube Channels Section
+                html += `
+                    <div class="col-md-4">
+                        <h6>Educational Channels</h6>
+                        ${data.youtube_channels.map(channel => `
+                            <a href="${channel.url}" target="_blank" class="resource-link">
+                                ${channel.name}
+                                <div class="resource-description">${channel.description}</div>
+                            </a>
+                        `).join('')}
+                    </div>
+                `;
+
+                // Learning Resources Section
+                html += `
+                    <div class="col-md-4">
+                        <h6>Learning Resources</h6>
+                        ${data.learning_resources.map(resource => `
+                            <a href="${resource.url}" target="_blank" class="resource-link">
+                                ${resource.name}
+                                <div class="resource-description">${resource.description}</div>
+                            </a>
+                        `).join('')}
+                    </div>
+                `;
+
+                html += '</div>';
+                document.getElementById('resourcesDisplay').innerHTML = html;
+            } catch (error) {
+                document.getElementById('resourcesDisplay').innerHTML = '<div class="alert alert-danger">Error loading resources</div>';
+            }
+        }
+
+        // Initialize
+        checkApiStatus();
+        loadResources();
+    </script>
+</body>
+</html>

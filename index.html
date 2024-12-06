@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FarmFit - GrowthQuest Demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2ecc71;
+            --secondary-color: #27ae60;
+            --accent-color: #3498db;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-color: #2c3e50;
+            --border-color: #e0e0e0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            padding: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand {
+            color: white !important;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        #category-nav {
+            display: flex;
+            gap: 1rem;
+            margin: 1rem 0;
+            padding: 0.5rem;
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .category-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            background: transparent;
+            color: var(--text-color);
+            transition: all 0.3s ease;
+        }
+
+        .category-btn:hover {
+            background: rgba(46, 204, 113, 0.1);
+        }
+
+        .category-btn.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .category-btn i {
+            margin-right: 0.5rem;
+        }
+
+        #feature-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            padding: 1rem;
+        }
+
+        .feature-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-size: 1.25rem;
+            color: var(--text-color);
+        }
+
+        .description {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .metric {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 0.5rem;
+            background: rgba(46, 204, 113, 0.1);
+            border-radius: 8px;
+            transition: background 0.3s ease;
+        }
+
+        .metric:hover {
+            background: rgba(46, 204, 113, 0.2);
+        }
+
+        .metric i {
+            font-size: 1.25rem;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-label {
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 0.25rem;
+        }
+
+        .metric-value {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--text-color);
+        }
+
+        .metric-value[contenteditable="true"] {
+            cursor: text;
+            padding: 0.25rem;
+            border-radius: 4px;
+            border: 1px dashed transparent;
+            transition: all 0.3s ease;
+        }
+
+        .metric-value[contenteditable="true"]:hover {
+            border-color: var(--primary-color);
+        }
+
+        .metric-value[contenteditable="true"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background: rgba(46, 204, 113, 0.1);
+        }
+
+        .chart-container {
+            height: 200px;
+            margin-top: 1rem;
+        }
+
+        .sync-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 50%;
+            background: transparent;
+            color: var(--text-color);
+            transition: all 0.3s ease;
+        }
+
+        .sync-btn:hover {
+            background: rgba(46, 204, 113, 0.1);
+        }
+
+        .sync-btn.active {
+            background: var(--primary-color);
+            color: white;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        #demo-controls {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 1000;
+        }
+
+        #start-demo {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 30px;
+            background: var(--primary-color);
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        #start-demo:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
+        #start-demo.active {
+            background: #e74c3c;
+        }
+
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(to right, var(--primary-color), var(--accent-color));
+            animation: loading 2s ease-in-out infinite;
+            transform-origin: 0% 50%;
+        }
+
+        @keyframes loading {
+            0% { transform: scaleX(0); }
+            50% { transform: scaleX(1); }
+            100% { transform: scaleX(0); }
+        }
+
+        /* Help Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 800px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+            position: relative;
+        }
+
+        .modal-header {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            color: var(--text-color);
+            margin: 0;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-color);
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .close-modal:hover {
+            background: rgba(0, 0, 0, 0.1);
+            transform: rotate(90deg);
+        }
+
+        .feature-section {
+            margin-bottom: 2rem;
+        }
+
+        .feature-section h3 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-item {
+            background: rgba(46, 204, 113, 0.1);
+            padding: 1rem;
+            border-radius: 8px;
+        }
+
+        .feature-item h4 {
+            color: var(--text-color);
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-item p {
+            color: #666;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        .help-btn {
+            position: fixed;
+            bottom: 2rem;
+            left: 2rem;
+            z-index: 1000;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 30px;
+            background: var(--accent-color);
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .help-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
+        .tooltip {
+            position: absolute;
+            background: var(--card-bg);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            font-size: 0.9rem;
+            color: var(--text-color);
+            z-index: 1000;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .tooltip.show {
+            opacity: 1;
+        }
+
+        /* Tutorial highlight */
+        .highlight {
+            position: relative;
+        }
+
+        .highlight::after {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            right: -4px;
+            bottom: -4px;
+            border: 2px solid var(--primary-color);
+            border-radius: 10px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.5; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading"></div>
+    
+    <nav class="navbar">
+        <div class="container">
+            <span class="navbar-brand">
+                <i class="fas fa-leaf"></i>
+                FarmFit - GrowthQuest
+            </span>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div id="category-nav"></div>
+        <div id="feature-container"></div>
+    </div>
+
+    <div id="demo-controls">
+        <button id="start-demo">Start Demo</button>
+    </div>
+
+    <button id="help-btn" class="help-btn">
+        <i class="fas fa-question-circle"></i>
+        Help & Guide
+    </button>
+
+    <!-- Help Modal -->
+    <div id="help-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Welcome to FarmFit - GrowthQuest Demo</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            
+            <div class="feature-section">
+                <h3>Getting Started</h3>
+                <p>This interactive demo showcases FarmFit's powerful agricultural management capabilities. Here's how to use it:</p>
+                <div class="feature-grid">
+                    <div class="feature-item">
+                        <h4>Start the Demo</h4>
+                        <p>Click the "Start Demo" button to begin real-time data simulation for all active features.</p>
+                    </div>
+                    <div class="feature-item">
+                        <h4>Navigate Categories</h4>
+                        <p>Use the category buttons to explore different aspects of farm management.</p>
+                    </div>
+                    <div class="feature-item">
+                        <h4>Toggle Features</h4>
+                        <p>Use the sync button on each card to enable/disable real-time updates for that feature.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-section">
+                <h3>Interactive Features</h3>
+                <div class="feature-grid">
+                    <div class="feature-item">
+                        <h4>Edit Metrics</h4>
+                        <p>Click on any metric value to edit it and see how changes affect the system.</p>
+                    </div>
+                    <div class="feature-item">
+                        <h4>Real-time Charts</h4>
+                        <p>Watch as charts update in real-time to reflect changing farm conditions.</p>
+                    </div>
+                    <div class="feature-item">
+                        <h4>Customizable Views</h4>
+                        <p>Toggle different features to focus on specific aspects of farm management.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-section">
+                <h3>Available Categories</h3>
+                <div class="feature-grid">
+                    <div class="feature-item">
+                        <h4>Operations</h4>
+                        <p>Monitor equipment, workforce, irrigation, and harvesting operations.</p>
+                    </div>
+                    <div class="feature-item">
+                        <h4>Monitoring</h4>
+                        <p>Track gene expression, climate conditions, soil health, and nutrient levels.</p>
+                    </div>
+                    <div class="feature-item">
+                        <h4>Analytics</h4>
+                        <p>Analyze yields, resource efficiency, forecasts, and process optimization.</p>
+                    </div>
+                    <div class="feature-item">
+                        <h4>Automation</h4>
+                        <p>Manage drones, robotics, smart scheduling, and system integration.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-section">
+                <h3>Tips & Tricks</h3>
+                <div class="feature-grid">
+                    <div class="feature-item">
+                        <h4>Experiment</h4>
+                        <p>Try editing different metrics to see how they affect other values and charts.</p>
+                    </div>
+                    <div class="feature-item">
+                        <h4>Combine Features</h4>
+                        <p>Enable multiple features to see how different aspects of farm management interact.</p>
+                    </div>
+                    <div class="feature-item">
+                        <h4>Explore Patterns</h4>
+                        <p>Watch for patterns and correlations between different metrics and features.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="tooltip" class="tooltip"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment"></script>
+    <script type="module" src="js/main.js"></script>
+    <script>
+        // Help Modal functionality
+        document.addEventListener('DOMContentLoaded', () => {
+            const modal = document.getElementById('help-modal');
+            const helpBtn = document.getElementById('help-btn');
+            const closeBtn = document.querySelector('.close-modal');
+
+            // Show modal on first visit
+            if (!localStorage.getItem('demoVisited')) {
+                modal.classList.add('show');
+                localStorage.setItem('demoVisited', 'true');
+            }
+
+            helpBtn.addEventListener('click', () => {
+                modal.classList.add('show');
+            });
+
+            closeBtn.addEventListener('click', () => {
+                modal.classList.remove('show');
+            });
+
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.remove('show');
+                }
+            });
+
+            // Tooltip functionality
+            const tooltip = document.getElementById('tooltip');
+            const tooltipTargets = document.querySelectorAll('[data-tooltip]');
+
+            tooltipTargets.forEach(target => {
+                target.addEventListener('mouseenter', (e) => {
+                    const text = e.target.dataset.tooltip;
+                    tooltip.textContent = text;
+                    tooltip.classList.add('show');
+                    
+                    const rect = e.target.getBoundingClientRect();
+                    tooltip.style.top = `${rect.bottom + 10}px`;
+                    tooltip.style.left = `${rect.left + (rect.width / 2) - (tooltip.offsetWidth / 2)}px`;
+                });
+
+                target.addEventListener('mouseleave', () => {
+                    tooltip.classList.remove('show');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

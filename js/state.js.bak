@@ -1,0 +1,127 @@
+// State management for FarmFit demo
+class DemoState {
+    constructor() {
+        this.charts = {};
+        this.intervals = {};
+        this.metrics = {};
+        this.updateInterval = 3000; // 3 seconds
+    }
+
+    registerChart(type, chart) {
+        this.charts[type] = chart;
+    }
+
+    unregisterChart(type) {
+        delete this.charts[type];
+    }
+
+    startRealTimeUpdates(type) {
+        if (this.intervals[type]) return;
+
+        this.intervals[type] = setInterval(() => {
+            this.updateChartData(type);
+            this.updateMetrics(type);
+        }, this.updateInterval);
+    }
+
+    stopRealTimeUpdates(type) {
+        if (this.intervals[type]) {
+            clearInterval(this.intervals[type]);
+            delete this.intervals[type];
+        }
+    }
+
+    stopAllUpdates() {
+        Object.keys(this.intervals).forEach(type => {
+            this.stopRealTimeUpdates(type);
+        });
+    }
+
+    updateChartData(type) {
+        const chart = this.charts[type];
+        if (!chart) return;
+
+        switch(type) {
+            case 'equipment':
+                this.updateEquipmentData(chart);
+                break;
+            case 'workforce':
+                this.updateWorkforceData(chart);
+                break;
+            case 'gene':
+                this.updateGeneData(chart);
+                break;
+            case 'climate':
+                this.updateClimateData(chart);
+                break;
+        }
+    }
+
+    updateEquipmentData(chart) {
+        const newData = chart.data.datasets[0].data.map(val => {
+            return Math.min(100, Math.max(60, val + (Math.random() - 0.5) * 10));
+        });
+        chart.data.datasets[0].data = newData;
+        chart.update('none');
+
+        // Update metrics
+        document.getElementById('equipmentoperational').textContent = 
+            Math.round(newData.reduce((a, b) => a + b, 0) / newData.length) + '%';
+        
+        const maintenanceCount = newData.filter(val => val < 80).length;
+        document.getElementById('equipmentmaintenance').textContent = maintenanceCount;
+    }
+
+    updateWorkforceData(chart) {
+        const newData = chart.data.datasets[0].data.map(val => {
+            return Math.min(100, Math.max(70, val + (Math.random() - 0.5) * 8));
+        });
+        chart.data.datasets[0].data = newData;
+        chart.update('none');
+
+        // Update metrics
+        document.getElementById('workforceefficiency').textContent = 
+            Math.round(newData[newData.length - 1]) + '%';
+        
+        const activeTeams = Math.floor(10 + Math.random() * 5);
+        document.getElementById('workforceteams').textContent = activeTeams;
+    }
+
+    updateGeneData(chart) {
+        const newData = chart.data.datasets[0].data.map(val => {
+            return Math.min(100, Math.max(60, val + (Math.random() - 0.5) * 15));
+        });
+        chart.data.datasets[0].data = newData;
+        chart.update('none');
+
+        // Update metrics
+        const accuracy = Math.round(90 + Math.random() * 9);
+        document.getElementById('geneaccuracy').textContent = accuracy + '%';
+        
+        const markers = Math.floor(2 + Math.random() * 3);
+        document.getElementById('genemarkers').textContent = markers;
+    }
+
+    updateClimateData(chart) {
+        const tempData = chart.data.datasets[0].data.map(val => {
+            return Math.min(35, Math.max(15, val + (Math.random() - 0.5) * 3));
+        });
+        const rainData = chart.data.datasets[1].data.map(val => {
+            return Math.min(100, Math.max(20, val + (Math.random() - 0.5) * 10));
+        });
+        
+        chart.data.datasets[0].data = tempData;
+        chart.data.datasets[1].data = rainData;
+        chart.update('none');
+
+        // Update metrics
+        const accuracy = Math.round(92 + Math.random() * 7);
+        document.getElementById('climateforecast').textContent = accuracy + '%';
+        
+        const range = Math.floor(5 + Math.random() * 4);
+        document.getElementById('climaterange').textContent = range + ' days';
+    }
+}
+
+// Create global state instance
+window.demoState = new DemoState();

@@ -1,0 +1,114 @@
+// Configuration for the demo application
+export const CONFIG = {
+    // Feature categories
+    categories: {
+        operations: {
+            name: 'Daily Operations',
+            features: ['equipment', 'workforce']
+        },
+        monitoring: {
+            name: 'Monitoring',
+            features: ['gene', 'climate']
+        }
+    },
+    
+    // Update intervals (in milliseconds)
+    intervals: {
+        realtime: 5000,
+        charts: 3000
+    },
+    
+    // Chart defaults
+    chartDefaults: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: {
+            duration: 750,
+            easing: 'easeInOutQuart'
+        }
+    }
+};
+
+// Demo data ranges
+export const DEMO_RANGES = {
+    equipment: {
+        operational: { min: 85, max: 100 },
+        maintenance: { min: 0, max: 8 }
+    },
+    workforce: {
+        efficiency: { min: 80, max: 100 },
+        teams: { min: 10, max: 15 }
+    },
+    gene: {
+        accuracy: { min: 95, max: 100 },
+        markers: { min: 2, max: 5 }
+    },
+    climate: {
+        temperature: { min: 15, max: 35 },
+        rainfall: { min: 0, max: 100 }
+    }
+};
+
+// Configuration settings for FarmFit demo
+const DemoConfig = {
+    updateInterval: 3000, // 3 seconds
+    
+    categories: {
+        operations: {
+            label: 'Operations',
+            features: ['equipment', 'workforce']
+        },
+        monitoring: {
+            label: 'Monitoring',
+            features: ['gene', 'climate']
+        }
+    },
+    
+    features: {
+        equipment: {
+            title: 'Equipment Management',
+            metrics: [
+                { id: 'operational', label: 'Operational', value: '92%' },
+                { id: 'maintenance', label: 'Maintenance', value: '5' }
+            ]
+        },
+        workforce: {
+            title: 'Workforce Management',
+            metrics: [
+                { id: 'efficiency', label: 'Efficiency', value: '85%' },
+                { id: 'teams', label: 'Active Teams', value: '12' }
+            ]
+        },
+        gene: {
+            title: 'Gene Expression',
+            metrics: [
+                { id: 'accuracy', label: 'Accuracy', value: '98%' },
+                { id: 'markers', label: 'Active Markers', value: '3' }
+            ]
+        },
+        climate: {
+            title: 'Climate Modeling',
+            metrics: [
+                { id: 'forecast', label: 'Forecast Accuracy', value: '95%' },
+                { id: 'range', label: 'Forecast Range', value: '7 days' }
+            ]
+        }
+    },
+    
+    chartDefaults: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        },
+        animation: {
+            duration: 750,
+            easing: 'easeInOutQuart'
+        }
+    }
+};
+
+// Make config available globally
+window.DemoConfig = DemoConfig;

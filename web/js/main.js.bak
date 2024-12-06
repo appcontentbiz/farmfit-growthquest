@@ -1,0 +1,239 @@
+// Main application code
+const FarmFitDemo = {
+    charts: {},
+    intervals: {},
+    demoData: {
+        equipment: {
+            labels: ['Tractors', 'Harvesters', 'Irrigation', 'Tools', 'Sensors'],
+            data: [85, 92, 78, 95, 88]
+        },
+        workforce: {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+            data: [75, 82, 88, 85, 90]
+        },
+        gene: {
+            labels: Array.from({length: 12}, (_, i) => `${i*2}h`),
+            data: Array.from({length: 12}, () => Math.floor(70 + Math.random() * 30))
+        },
+        climate: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            temperature: [20, 22, 25, 28, 30, 32],
+            rainfall: [45, 38, 65, 72, 55, 40]
+        }
+    },
+
+    init() {
+        this.setupEventListeners();
+        this.createFeatureCards();
+        this.showDefaultCategory();
+    },
+
+    createFeatureCards() {
+        const template = document.getElementById('cardTemplate');
+        const container = document.getElementById('featureCards');
+        
+        // Clear existing cards
+        container.innerHTML = '';
+        
+        // Create cards for each feature
+        const features = [
+            {
+                id: 'equipment',
+                title: 'Equipment Management',
+                category: 'operations',
+                metrics: [
+                    { id: 'operational', label: 'Operational', value: '92%' },
+                    { id: 'maintenance', label: 'Maintenance', value: '5' }
+                ]
+            },
+            {
+                id: 'workforce',
+                title: 'Workforce Management',
+                category: 'operations',
+                metrics: [
+                    { id: 'efficiency', label: 'Efficiency', value: '85%' },
+                    { id: 'teams', label: 'Active Teams', value: '12' }
+                ]
+            },
+            {
+                id: 'gene',
+                title: 'Gene Expression',
+                category: 'monitoring',
+                metrics: [
+                    { id: 'accuracy', label: 'Accuracy', value: '98%' },
+                    { id: 'markers', label: 'Active Markers', value: '3' }
+                ]
+            },
+            {
+                id: 'climate',
+                title: 'Climate Modeling',
+                category: 'monitoring',
+                metrics: [
+                    { id: 'forecast', label: 'Forecast Accuracy', value: '95%' },
+                    { id: 'range', label: 'Forecast Range', value: '7 days' }
+                ]
+            }
+        ];
+
+        features.forEach(feature => {
+            const card = template.content.cloneNode(true);
+            
+            // Set card properties
+            const cardElement = card.querySelector('.feature-category');
+            cardElement.classList.add(feature.category);
+            
+            // Set title
+            card.querySelector('.card-title').textContent = feature.title;
+            
+            // Set canvas ID
+            const canvas = card.querySelector('canvas');
+            canvas.id = `${feature.id}Chart`;
+            
+            // Set realtime button
+            const realtimeBtn = card.querySelector('.realtime-toggle');
+            realtimeBtn.dataset.type = feature.id;
+            
+            // Add metrics
+            const metricGrid = card.querySelector('.metric-grid');
+            feature.metrics.forEach(metric => {
+                const metricDiv = document.createElement('div');
+                metricDiv.className = 'metric-item';
+                metricDiv.innerHTML = `
+                    <div class="metric-value" id="${feature.id}${metric.id}">${metric.value}</div>
+                    <div class="metric-label">${metric.label}</div>
+                `;
+                metricGrid.appendChild(metricDiv);
+            });
+            
+            container.appendChild(card);
+        });
+    },
+
+    setupEventListeners() {
+        // Category navigation
+        document.querySelectorAll('.category-nav button').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const category = e.target.dataset.category;
+                this.showCategory(category);
+            });
+        });
+        
+        // Real-time toggles
+        document.querySelectorAll('.realtime-toggle').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const type = e.target.dataset.type;
+                this.toggleRealTime(type);
+            });
+        });
+
+        // Demo controls
+        document.getElementById('startDemo').addEventListener('click', () => {
+            this.startDemo();
+        });
+
+        document.getElementById('resetDemo').addEventListener('click', () => {
+            this.resetDemo();
+        });
+    },
+
+    initializeChart(type) {
+        const ctx = document.getElementById(`${type}Chart`)?.getContext('2d');
+        if (!ctx) return;
+
+        const config = this.getChartConfig(type);
+        this.charts[type] = new Chart(ctx, config);
+    },
+
+    getChartConfig(type) {
+        const data = this.demoData[type];
+        
+        switch(type) {
+            case 'equipment':
+                return {
+                    type: 'bar',
+                    data: {
+                        labels: data.labels,
+                        datasets: [{
+                            label: 'Operational Status (%)',
+                            data: data.data,
+                            backgroundColor: 'rgba(46, 204, 113, 0.6)',
+                            borderColor: 'rgb(46, 204, 113)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 100
+                            }
+                        }
+                    }
+                };
+            
+            case 'workforce':
+                return {
+                    type: 'line',
+                    data: {
+                        labels: data.labels,
+                        datasets: [{
+                            label: 'Team Efficiency (%)',
+                            data: data.data,
+                            borderColor: 'rgb(52, 152, 219)',
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                };
+            
+            // Add other chart configurations as needed
+            default:
+                return null;
+        }
+    },
+
+    showCategory(category) {
+        // Update active button
+        document.querySelectorAll('.category-nav button').forEach(button => {
+            button.classList.toggle('active', button.dataset.category === category);
+        });
+        
+        // Show/hide categories
+        document.querySelectorAll('.feature-category').forEach(el => {
+            el.style.display = el.classList.contains(category) ? 'block' : 'none';
+        });
+        
+        // Initialize charts for visible cards
+        this.initializeVisibleCharts();
+    },
+
+    showDefaultCategory() {
+        this.showCategory('operations');
+    },
+
+    startDemo() {
+        document.getElementById('startDemo').style.display = 'none';
+        document.getElementById('resetDemo').style.display = 'block';
+        
+        // Start real-time updates for all visible charts
+        document.querySelectorAll('.feature-card:visible').forEach(card => {
+            const type = card.querySelector('.realtime-toggle').dataset.type;
+            this.startRealTimeUpdates(type);
+        });
+    },
+
+    resetDemo() {
+        location.reload();
+    }
+};
+
+// Initialize when the page loads
+document.addEventListener('DOMContentLoaded', () => {
+    FarmFitDemo.init();
+});
