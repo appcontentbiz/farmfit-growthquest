@@ -598,6 +598,103 @@
     border-bottom: none;
 }
 
+/* Metric Values */
+.metric-values {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: rgba(46, 204, 113, 0.1);
+    border-radius: 8px;
+}
+
+.metric {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.metric-label {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 0.25rem;
+}
+
+.metric-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--text-color);
+}
+
+.metric-value[contenteditable="true"] {
+    cursor: text;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    border: 1px dashed transparent;
+    transition: all 0.3s ease;
+}
+
+.metric-value[contenteditable="true"]:hover {
+    border-color: var(--primary-color);
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.metric-value[contenteditable="true"]:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    background: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Demo Controls */
+.demo-controls {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 1000;
+}
+
+.demo-button {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 30px;
+    background: var(--primary-color);
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.demo-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+.demo-button.active {
+    background: #e74c3c;
+}
+
+/* Loading Animation */
+.loading {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(to right, var(--primary-color), var(--accent-color));
+    animation: loading 2s ease-in-out infinite;
+    transform-origin: 0% 50%;
+    z-index: 1000;
+}
+
+@keyframes loading {
+    0% { transform: scaleX(0); }
+    50% { transform: scaleX(1); }
+    100% { transform: scaleX(0); }
+}
+
 /* Add responsive design and new feature styles */
 .dashboard-section {
     background: #ffffff;

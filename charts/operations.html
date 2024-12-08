@@ -20,21 +20,61 @@
         <div class="chart-grid">
             <div class="chart-card">
                 <h3>Task Completion Rate</h3>
+                <div class="metric-values">
+                    <div class="metric">
+                        <span class="metric-label">Current Rate</span>
+                        <span class="metric-value" contenteditable="true" data-chart="taskCompletionChart" data-index="5">92</span>%
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Target</span>
+                        <span class="metric-value">95</span>%
+                    </div>
+                </div>
                 <canvas id="taskCompletionChart"></canvas>
             </div>
             
             <div class="chart-card">
                 <h3>Resource Utilization</h3>
+                <div class="metric-values">
+                    <div class="metric">
+                        <span class="metric-label">Efficiency</span>
+                        <span class="metric-value" contenteditable="true" data-chart="resourceUtilizationChart" data-index="5">85</span>%
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Target</span>
+                        <span class="metric-value">90</span>%
+                    </div>
+                </div>
                 <canvas id="resourceUtilizationChart"></canvas>
             </div>
             
             <div class="chart-card">
                 <h3>Labor Hours Distribution</h3>
+                <div class="metric-values">
+                    <div class="metric">
+                        <span class="metric-label">Productivity</span>
+                        <span class="metric-value" contenteditable="true" data-chart="laborDistributionChart" data-index="5">88</span>%
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Target</span>
+                        <span class="metric-value">92</span>%
+                    </div>
+                </div>
                 <canvas id="laborDistributionChart"></canvas>
             </div>
             
             <div class="chart-card">
                 <h3>Equipment Usage</h3>
+                <div class="metric-values">
+                    <div class="metric">
+                        <span class="metric-label">Utilization</span>
+                        <span class="metric-value" contenteditable="true" data-chart="equipmentUsageChart" data-index="5">78</span>%
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Target</span>
+                        <span class="metric-value">85</span>%
+                    </div>
+                </div>
                 <canvas id="equipmentUsageChart"></canvas>
             </div>
         </div>
@@ -50,7 +90,7 @@
                     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
                     datasets: [{
                         label: 'Completed Tasks',
-                        data: [85, 88, 92, 87, 94, 90],
+                        data: [85, 88, 92, 87, 94, 92],
                         borderColor: '#4CAF50',
                         tension: 0.1
                     }]
@@ -122,7 +162,7 @@
                     labels: ['Tractors', 'Harvesters', 'Irrigation', 'Planters', 'Sprayers'],
                     datasets: [{
                         label: 'Utilization',
-                        data: [85, 70, 90, 65, 75],
+                        data: [85, 70, 90, 65, 78],
                         backgroundColor: 'rgba(76, 175, 80, 0.2)',
                         borderColor: '#4CAF50'
                     }]
@@ -139,5 +179,6 @@
             });
         });
     </script>
+    <script src="../js/dashboard.js"></script>
 </body>
 </html>
