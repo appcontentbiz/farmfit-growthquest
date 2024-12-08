@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crop Monitoring - FarmFit</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="../index.html">← Back to Dashboard</a>
+        </nav>
+    </header>
+
+    <main class="charts-container">
+        <h1>Crop Monitoring Analytics</h1>
+        
+        <div class="chart-grid">
+            <div class="chart-card">
+                <h3>Crop Health Index</h3>
+                <canvas id="cropHealthChart"></canvas>
+            </div>
+            
+            <div class="chart-card">
+                <h3>Soil Conditions</h3>
+                <canvas id="soilConditionsChart"></canvas>
+            </div>
+            
+            <div class="chart-card">
+                <h3>Growth Progress</h3>
+                <canvas id="growthProgressChart"></canvas>
+            </div>
+            
+            <div class="chart-card">
+                <h3>Pest Pressure</h3>
+                <canvas id="pestPressureChart"></canvas>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Crop Health Chart
+            new Chart(document.getElementById('cropHealthChart'), {
+                type: 'line',
+                data: {
+                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6'],
+                    datasets: [{
+                        label: 'Health Index',
+                        data: [95, 92, 94, 90, 93, 91],
+                        borderColor: '#4CAF50',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Crop Health Index Over Time'
+                        }
+                    }
+                }
+            });
+
+            // Soil Conditions Chart
+            new Chart(document.getElementById('soilConditionsChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['Moisture', 'pH', 'Nitrogen', 'Phosphorus', 'Potassium'],
+                    datasets: [{
+                        label: 'Current Level',
+                        data: [80, 75, 65, 70, 85],
+                        backgroundColor: '#2196F3'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Soil Condition Metrics (%)'
+                        }
+                    }
+                }
+            });
+
+            // Growth Progress Chart
+            new Chart(document.getElementById('growthProgressChart'), {
+                type: 'line',
+                data: {
+                    labels: ['Stage 1', 'Stage 2', 'Stage 3', 'Stage 4', 'Stage 5'],
+                    datasets: [{
+                        label: 'Actual Growth',
+                        data: [10, 25, 45, 75, 95],
+                        borderColor: '#4CAF50'
+                    }, {
+                        label: 'Expected Growth',
+                        data: [12, 28, 48, 72, 92],
+                        borderColor: '#FFC107',
+                        borderDash: [5, 5]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Growth Progress vs Expected'
+                        }
+                    }
+                }
+            });
+
+            // Pest Pressure Chart
+            new Chart(document.getElementById('pestPressureChart'), {
+                type: 'bubble',
+                data: {
+                    datasets: [{
+                        label: 'Pest Incidents',
+                        data: [
+                            { x: 1, y: 10, r: 10 },
+                            { x: 2, y: 15, r: 15 },
+                            { x: 3, y: 8, r: 8 },
+                            { x: 4, y: 12, r: 12 }
+                        ],
+                        backgroundColor: 'rgba(255, 87, 34, 0.5)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Pest Pressure Distribution'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Field Section'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Severity'
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

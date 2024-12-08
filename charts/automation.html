@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farm Automation - FarmFit</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="../index.html">← Back to Dashboard</a>
+        </nav>
+    </header>
+
+    <main class="charts-container">
+        <h1>Automation Analytics</h1>
+        
+        <div class="chart-grid">
+            <div class="chart-card">
+                <h3>System Performance</h3>
+                <canvas id="systemPerformanceChart"></canvas>
+            </div>
+            
+            <div class="chart-card">
+                <h3>Automation Coverage</h3>
+                <canvas id="automationCoverageChart"></canvas>
+            </div>
+            
+            <div class="chart-card">
+                <h3>Energy Consumption</h3>
+                <canvas id="energyConsumptionChart"></canvas>
+            </div>
+            
+            <div class="chart-card">
+                <h3>Automation ROI</h3>
+                <canvas id="automationROIChart"></canvas>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // System Performance Chart
+            new Chart(document.getElementById('systemPerformanceChart'), {
+                type: 'line',
+                data: {
+                    labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
+                    datasets: [{
+                        label: 'System Uptime',
+                        data: [99, 98, 100, 99, 97, 99],
+                        borderColor: '#4CAF50',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: '24-Hour System Performance (%)'
+                        }
+                    }
+                }
+            });
+
+            // Automation Coverage Chart
+            new Chart(document.getElementById('automationCoverageChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Irrigation', 'Climate Control', 'Feeding Systems', 'Monitoring', 'Manual'],
+                    datasets: [{
+                        data: [35, 25, 20, 15, 5],
+                        backgroundColor: [
+                            '#4CAF50',
+                            '#2196F3',
+                            '#FFC107',
+                            '#9C27B0',
+                            '#FF5722'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Automation Coverage by System'
+                        }
+                    }
+                }
+            });
+
+            // Energy Consumption Chart
+            new Chart(document.getElementById('energyConsumptionChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Consumption',
+                        data: [45, 42, 47, 40, 43, 35, 32],
+                        backgroundColor: '#2196F3'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Daily Energy Consumption (kWh)'
+                        }
+                    }
+                }
+            });
+
+            // Automation ROI Chart
+            new Chart(document.getElementById('automationROIChart'), {
+                type: 'line',
+                data: {
+                    labels: ['Month 1', 'Month 2', 'Month 3', 'Month 4', 'Month 5', 'Month 6'],
+                    datasets: [{
+                        label: 'Cost Savings',
+                        data: [5000, 12000, 20000, 35000, 52000, 75000],
+                        borderColor: '#4CAF50'
+                    }, {
+                        label: 'Investment',
+                        data: [50000, 50000, 50000, 50000, 50000, 50000],
+                        borderColor: '#FF5722',
+                        borderDash: [5, 5]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Automation ROI Analysis ($)'
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

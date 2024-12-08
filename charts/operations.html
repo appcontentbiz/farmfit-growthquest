@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farm Operations Analytics - FarmFit</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="../index.html">← Back to Dashboard</a>
+        </nav>
+    </header>
+
+    <main class="charts-container">
+        <h1>Farm Operations Analytics</h1>
+        
+        <div class="chart-grid">
+            <div class="chart-card">
+                <h3>Task Completion Rate</h3>
+                <canvas id="taskCompletionChart"></canvas>
+            </div>
+            
+            <div class="chart-card">
+                <h3>Resource Utilization</h3>
+                <canvas id="resourceUtilizationChart"></canvas>
+            </div>
+            
+            <div class="chart-card">
+                <h3>Labor Hours Distribution</h3>
+                <canvas id="laborDistributionChart"></canvas>
+            </div>
+            
+            <div class="chart-card">
+                <h3>Equipment Usage</h3>
+                <canvas id="equipmentUsageChart"></canvas>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Initialize charts
+        document.addEventListener('DOMContentLoaded', () => {
+            // Task Completion Chart
+            new Chart(document.getElementById('taskCompletionChart'), {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Completed Tasks',
+                        data: [85, 88, 92, 87, 94, 90],
+                        borderColor: '#4CAF50',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Monthly Task Completion Rate (%)'
+                        }
+                    }
+                }
+            });
+
+            // Resource Utilization Chart
+            new Chart(document.getElementById('resourceUtilizationChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['Water', 'Fertilizer', 'Seeds', 'Fuel', 'Power'],
+                    datasets: [{
+                        label: 'Usage',
+                        data: [75, 62, 88, 70, 85],
+                        backgroundColor: '#2196F3'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Resource Utilization Efficiency (%)'
+                        }
+                    }
+                }
+            });
+
+            // Labor Distribution Chart
+            new Chart(document.getElementById('laborDistributionChart'), {
+                type: 'pie',
+                data: {
+                    labels: ['Planting', 'Maintenance', 'Harvesting', 'Equipment', 'Other'],
+                    datasets: [{
+                        data: [30, 25, 20, 15, 10],
+                        backgroundColor: [
+                            '#4CAF50',
+                            '#2196F3',
+                            '#FFC107',
+                            '#9C27B0',
+                            '#FF5722'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Labor Hours Distribution'
+                        }
+                    }
+                }
+            });
+
+            // Equipment Usage Chart
+            new Chart(document.getElementById('equipmentUsageChart'), {
+                type: 'radar',
+                data: {
+                    labels: ['Tractors', 'Harvesters', 'Irrigation', 'Planters', 'Sprayers'],
+                    datasets: [{
+                        label: 'Utilization',
+                        data: [85, 70, 90, 65, 75],
+                        backgroundColor: 'rgba(76, 175, 80, 0.2)',
+                        borderColor: '#4CAF50'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Equipment Utilization (%)'
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

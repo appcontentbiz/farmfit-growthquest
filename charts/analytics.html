@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farm Analytics - FarmFit</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="../index.html">← Back to Dashboard</a>
+        </nav>
+    </header>
+
+    <main class="charts-container">
+        <h1>Farm Analytics Dashboard</h1>
+        
+        <div class="chart-grid">
+            <div class="chart-card">
+                <h3>Yield Predictions</h3>
+                <canvas id="yieldPredictionChart"></canvas>
+            </div>
+            
+            <div class="chart-card">
+                <h3>Cost Analysis</h3>
+                <canvas id="costAnalysisChart"></canvas>
+            </div>
+            
+            <div class="chart-card">
+                <h3>Resource Efficiency</h3>
+                <canvas id="resourceEfficiencyChart"></canvas>
+            </div>
+            
+            <div class="chart-card">
+                <h3>Profit Margins</h3>
+                <canvas id="profitMarginChart"></canvas>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Yield Prediction Chart
+            new Chart(document.getElementById('yieldPredictionChart'), {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Predicted Yield',
+                        data: [120, 135, 150, 142, 158, 165],
+                        borderColor: '#4CAF50',
+                        tension: 0.1
+                    }, {
+                        label: 'Actual Yield',
+                        data: [118, 132, 145, 140, 155, null],
+                        borderColor: '#2196F3',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Yield Predictions vs Actual (tons)'
+                        }
+                    }
+                }
+            });
+
+            // Cost Analysis Chart
+            new Chart(document.getElementById('costAnalysisChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['Labor', 'Equipment', 'Seeds', 'Fertilizer', 'Water', 'Other'],
+                    datasets: [{
+                        label: 'Costs',
+                        data: [25000, 18000, 12000, 15000, 8000, 5000],
+                        backgroundColor: '#2196F3'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Cost Distribution ($)'
+                        }
+                    }
+                }
+            });
+
+            // Resource Efficiency Chart
+            new Chart(document.getElementById('resourceEfficiencyChart'), {
+                type: 'radar',
+                data: {
+                    labels: ['Water Use', 'Energy', 'Labor', 'Equipment', 'Materials'],
+                    datasets: [{
+                        label: 'Current Efficiency',
+                        data: [85, 78, 82, 75, 88],
+                        backgroundColor: 'rgba(76, 175, 80, 0.2)',
+                        borderColor: '#4CAF50'
+                    }, {
+                        label: 'Target Efficiency',
+                        data: [90, 85, 85, 80, 90],
+                        backgroundColor: 'rgba(33, 150, 243, 0.2)',
+                        borderColor: '#2196F3'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Resource Efficiency Analysis (%)'
+                        }
+                    }
+                }
+            });
+
+            // Profit Margin Chart
+            new Chart(document.getElementById('profitMarginChart'), {
+                type: 'line',
+                data: {
+                    labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+                    datasets: [{
+                        label: 'Gross Margin',
+                        data: [32, 35, 38, 41],
+                        borderColor: '#4CAF50'
+                    }, {
+                        label: 'Net Margin',
+                        data: [18, 20, 22, 24],
+                        borderColor: '#FFC107'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Profit Margins (%)'
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

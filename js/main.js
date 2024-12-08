@@ -19,6 +19,7 @@ export class FarmFitDemo {
         this.loadCategory('operations');
         this.setupGlobalEventListeners();
         this.loadSavedConfig();
+        this.initializeFeatureCards();
     }
 
     setupCategoryNavigation() {
@@ -469,6 +470,59 @@ export class FarmFitDemo {
         if (lastConfig) {
             this.loadConfig(lastConfig);
         }
+    }
+
+    initializeFeatureCards() {
+        const features = {
+            'operations': {
+                title: 'Farm Operations',
+                icon: '',
+                route: '/operations.html',
+                description: 'Manage daily farm operations and scheduling'
+            },
+            'monitoring': {
+                title: 'Crop Monitoring',
+                icon: '',
+                route: '/monitoring.html',
+                description: 'Track crop health and growth metrics'
+            },
+            'analytics': {
+                title: 'Farm Analytics',
+                icon: '',
+                route: '/analytics.html',
+                description: 'View detailed farming performance metrics'
+            },
+            'automation': {
+                title: 'Smart Automation',
+                icon: '',
+                route: '/automation.html',
+                description: 'Automated farming systems control'
+            }
+        };
+
+        const container = document.querySelector('.feature-cards');
+        if (container) {
+            container.innerHTML = '';
+            Object.entries(features).forEach(([key, feature]) => {
+                const card = document.createElement('div');
+                card.className = 'feature-card';
+                card.innerHTML = `
+                    <div class="feature-icon">${feature.icon}</div>
+                    <h3>${feature.title}</h3>
+                    <p>${feature.description}</p>
+                    <button onclick="navigateToFeature('${key}')" class="feature-button">
+                        Open ${feature.title}
+                    </button>
+                `;
+                container.appendChild(card);
+            });
+        }
+    }
+
+    navigateToFeature(feature) {
+        // Store current feature for deep linking
+        localStorage.setItem('currentFeature', feature);
+        window.location.href = `charts/${feature}.html`;
     }
 }
 
